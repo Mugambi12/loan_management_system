@@ -1,0 +1,84 @@
+{% if not hide_navbar %}
+
+<nav class="navbar navbar-expand-lg fixed-top bg-light">
+    <div class="container-fluid mx-2">
+        <!-- Side Nav Toggle -->
+        <button
+            class="navbar-toggler border-0"
+            onclick="toggleSidebar()"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Company Logo -->
+        <a
+            class="navbar-brand"
+            href="#TOP"
+        >
+            <img
+                src="{{ url_for('static', filename='images/logo.svg') }}"
+                alt="Company Logo"
+                height="40"
+            />
+            <span class="fw-bold">Apo</span
+            ><span class="text-danger fw-bold">Gen</span>
+        </a>
+
+        <!-- Navbar Toggle -->
+        <button
+            class="navbar-toggler border-0"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar -->
+        <div
+            class="collapse navbar-collapse justify-content-end"
+            id="navbarNav"
+        >
+            <ul class="navbar-nav">
+                <li class="nav-item mx-1">
+                    <span class="nav-link">
+                        Welcome,
+                        <b class="text-info">{{ current_user.first_name.title() }}</b>
+                    </span>
+                </li>
+                <li class="nav-item mx-1">
+                    <span class="nav-link">
+                        <i class="fas fa-user text-info"></i>
+                        <span class="text-primary">
+                            {{ current_user.role.name.title() }}
+                        </span>
+                    </span>
+                </li>
+                <li class="nav-item mx-1">
+                    <span class="nav-link">
+                        {% if current_user.verification_status %}
+                        <span class="text-success">Verified</span>
+                        <i class="fas fa-check-circle text-success"></i>
+                        {% else %}
+                        <span class="text-danger">Not Verified</span>
+                        <i class="fas fa-times-circle text-danger"></i>
+                        {% endif %}
+                    </span>
+                </li>
+                <li class="nav-item mx-1">
+                    <a
+                        class="btn btn-outline-danger border rounded-pill px-3"
+                        href="{{ url_for('routes.logout') }}"
+                        onclick="localStorage.clear();"
+                    >Logout</a
+                    >
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{% endif %}

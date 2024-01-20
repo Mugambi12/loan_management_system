@@ -1,0 +1,101 @@
+<!-- Edit Contributions Section -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Back to Dashboard -->
+    <ul class="nav nav-pills justify-content-start border-0">
+        <li class="nav-item">
+            <a class="nav-link rounded-pill" href="{{ url_for('routes.dashboard') }}">
+                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+            </a>
+        </li>
+    </ul>
+
+    <!-- Edit Contribution Form -->
+    <div class="col-md-8 mx-auto mb-3">
+        <div class="h2 text-center text-dark mb-3 mt-2">Edit a Transaction Data</div>
+        <div class="h6 text-center fst-italic text-muted">Track Every Transaction Made.</div>
+
+        <!-- Contribution Form -->
+        <div class="container p-3 mb-3">
+            <form action="{{ url_for('routes.edit_contribution', contribution_id=contribution.id) }}" method="post">
+              {{ edit_contribution_form.csrf_token }}
+              <div class="card-header h5 text-center text-dark mb-3 mt-2">Update the Transaction of <b class="text-danger">{{ contributor_name.title() }}</b></div>
+                <div class="card-body row">
+                    <!-- Member Information -->
+                    <div class="col-md-6 mb-3 px-3">
+                        <label for="members_name" class="form-label">Members Name:</label>
+                        <input type="text" class="form-control rounded-pill" value="{{ contributor_name.title() }}" readonly>
+                    </div>
+
+                    <!-- Contribution Details -->
+                    <div class="col-md-6 mb-3 px-3">
+                        <label for="amount" class="form-label">Transaction Amount (KES):</label>
+                        <input
+                        type="number"
+                        class="form-control rounded-pill"
+                        id="amount"
+                        name="amount"
+                        min="0"
+                        step="0.01"
+                        value="{{ contribution.amount }}"
+                        required
+                        />
+                    </div>
+
+                    <!-- Transaction Type -->
+                    <div class="col-md-6 mb-3 px-3">
+                        <label for="transaction_type" class="form-label">Transaction Type:</label>
+                        <select class="form-select rounded-pill" id="transaction_type" name="transaction_type" required>
+                            <option value="true" {% if contribution.transaction_type %}selected{% endif %}>Contribution</option>
+                            <option value="false" {% if not contribution.transaction_type %}selected{% endif %}>Welfare</option>
+                        </select>
+                    </div>
+
+                    <!-- Fine Amount / Transaction Cost -->
+                    <div class="col-md-6 mb-3 px-3">
+                        <label for="fine_amount" class="form-label" id="fine-amount-label">
+                            {% if contribution.transaction_type %} Fine Amount (KES): (KES):{% else %}Transaction Cost (KES):{% endif %}
+                        </label>
+                        <input
+                            type="number"
+                            class="form-control rounded-pill"
+                            id="fine_amount"
+                            name="fine_amount"
+                            min="0"
+                            step="0.01"
+                            value="{{ contribution.fine_amount }}"
+                        />
+                    </div>
+
+                    <script>
+                        // Add an event listener to the select element
+                        $('#transaction_type').on('change', function() {
+                            // Get the selected value
+                            var selectedValue = $(this).val();
+
+                            // Update the label based on the selected value
+                            if (selectedValue === 'true') {
+                                $('#fine-amount-label').text('Fine Amount (KES):');
+                            } else {
+                                $('#fine-amount-label').text('Transaction Cost (KES):');
+                            }
+                        });
+                    </script>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="card-footer text-center mt-3">
+                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">
+                      Update Contribution
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

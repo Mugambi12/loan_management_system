@@ -1,0 +1,28 @@
+<!-- home/base.html -->
+
+{% extends 'base.html' %} {% block content %}
+
+<div class="container-fluids">
+
+  {% include 'navs/sidenav.html' %}
+
+  <!-- Content -->
+  <div class="content py-2">
+    {% include 'home/audits.html' %}
+    {% include 'home/dashboard.html' %}
+    {% include 'home/feeds.html' %}
+    {% include 'home/loans.html' %}
+    {% include 'home/meetings.html' %}
+    {% include 'home/settings.html' %}
+    {% include 'home/transactions.html' %}
+    {% include 'home/users.html' %}
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/data_tables_init.js') }}"></script>
+<script src="{{ url_for('static', filename='js/data_tables_tab-management.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/confirm_action_handler.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sidebar_and_section_manager.js') }}"></script>
+
+{% endblock %}

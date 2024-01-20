@@ -1,0 +1,134 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="container-fluid">
+    <!-- Back to Loans -->
+    <ul class="nav nav-pills justify-content-start border-0">
+        <li class="nav-item">
+            <a class="nav-link rounded-pill" href="{{ url_for('routes.dashboard') }}">
+                <i class="fas fa-arrow-left me-2"></i> Back to Loans
+            </a>
+        </li>
+    </ul>
+
+    <div class="col-md-8 mx-auto mb-3">
+            {% if current_user.membership %}
+            <div class="h2 text-center text-dark mb-3">{% if current_user.role.name in ['admin', 'system'] %} Create a New Loan {% else %} Request For a New Loan {% endif %}</div>
+            {% endif %}
+            <div class="h6 text-center fst-italic text-muted">We Value Each of Our Customers.</div>
+
+            <!-- Add New Loan Form -->
+            <div class="card mb-3">
+                <div class="card-header">Add a New Loan</div>
+                <form action="{{ url_for('routes.add_loan') }}" method="post">
+                    {{ form.csrf_token }}
+                    <div class="card-body">
+                        <!-- Form Input Section -->
+                        <div class="row">
+
+                            <!-- First Column -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="customer_name" class="form-label">Customer Name</label>
+                                    {% if not current_user.membership %} {{
+                                    form.customer_name(class="form-control rounded-pill", required=True,
+                                    value=current_user.customer_name.title) }} {% else %} {{
+                                    form.customer_name(class="form-control rounded-pill", required=True) }} {%
+                                    endif %}
+                                    <script>
+                                        $(document).ready(function () {
+                                        $("#customer_name").select2({
+                                            placeholder: "Type to search...",
+                                            allowClear: true,
+                                            tags: true,
+                                        });
+                                        });
+                                    </script>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="guarantor_name" class="form-label">Guarantor Name</label>
+                                    {{ form.guarantor_name(class="form-control rounded-pill", required=True) }}
+                                    <script>
+                                        $(document).ready(function () {
+                                        $("#guarantor_name").select2({
+                                            placeholder: "Type to search...",
+                                            allowClear: true,
+                                            tags: true,
+                                        });
+                                        });
+                                    </script>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="loan_type" class="form-label">Loan Type</label>
+                                    {{ form.loan_type(class="form-control rounded-pill", required=True) }}
+                                    <script>
+                                        $(document).ready(function () {
+                                        $("#loan_type").select2({
+                                            placeholder: "Type to search...",
+                                            allowClear: true,
+                                            tags: true,
+                                        });
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+
+                            <!-- Second Column -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="loan_duration" class="form-label">Loan Duration</label>
+                                    <div class="input-group">
+                                        {{ form.loan_duration(class="form-control", required=True) }}
+                                        <span class="input-group-text">Days</span>
+                                    </div>
+                                    <script>
+                                        $(document).ready(function () {
+                                        $("#loan_duration").select2({
+                                            placeholder: "Type to search...",
+                                            allowClear: true,
+                                            tags: true,
+                                        });
+                                        });
+                                    </script>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="principal" class="form-label">Principal Amount</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">KES</span>
+                                        <input
+                                        type="number"
+                                        class="form-control"
+                                        id="principal"
+                                        name="principal"
+                                        step="0.01"
+                                        required
+                                        />
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="service_cost" class="form-label">Service Cost</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">KES</span>
+                                        <input
+                                        type="number"
+                                        class="form-control"
+                                        id="service_cost"
+                                        name="service_cost"
+                                        step="0.01"
+                                        required
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="card-footer text-center mt-3">
+                            <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+    </div>
+</div>
+
+{% endblock %}

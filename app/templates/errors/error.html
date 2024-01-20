@@ -1,0 +1,28 @@
+{% extends 'base.html' %} {% block content %}
+
+<body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
+
+    <div class="text-center">
+        <h1 class="display-1 text-danger">Oops!</h1>
+        <p class="lead">Something went wrong.</p>
+
+        {% if errors %}
+            <div class="alert alert-danger">
+                <p>Please correct the following errors:</p>
+                <ul>
+                    {% for field, error_messages in errors.items() %}
+                        {% for error_message in error_messages %}
+                            <li>{{ field.capitalize() }}: {{ error_message }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <p class="lead">Please try again or contact support.</p>
+        <a href="{{ url_for('routes.dashboard') }}" class="nav-link text-primary">Go back to the home page</a>
+    </div>
+
+</body>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+<!-- Sidebar Management Section -->
+
+<div class="sidebar" id="customSidebar">
+    <ul>
+        <!-- Dashboard Category -->
+        <li onclick="showSection('dashboard')" id="dashboard-link" class="active">
+            <i class="fas fa-tachometer-alt text-primary me-2"></i> Dashboard
+        </li>
+
+        <!-- Users Category -->
+            <li onclick="showSection('users')" id="users-link">
+            {% if current_user.membership %}
+                <i class="fas fa-users text-secondary me-2"></i> Users
+            {% else %}
+                <i class="fas fa-user text-primary me-2"></i> Profile
+            {% endif %}
+            </li>
+
+        <!-- Transactions Category -->
+        {% if current_user.role.name is in ['admin', 'system'] %}
+            <li onclick="showSection('transactions')" id="transactions-link">
+                <i class="fas fa-dollar-sign text-info me-2"></i> Transactions
+            </li>
+        {% endif %}
+
+        <!-- Divider Section -->
+        <hr class="divider bg-primary"/>
+        <div class="divider-header text-muted fs-6">
+            {% if current_user.membership %} Record Management {% else %} My Record {% endif %}
+        </div>
+
+        <!-- Loans Category -->
+        <li onclick="showSection('loans')" id="loans-link">
+            <i class="fas fa-hand-holding-usd text-success me-2"></i> Loans
+            {% if loans_approved_count > 0 %}
+                <span class="badge bg-info rounded-pill">{{ loans_approved_count }} <Small>waiting</Small></span>
+            {% endif %}
+        </li>
+
+        <!-- Meetings Category -->
+        <li onclick="showSection('meetings')" id="meetings-link">
+            <i class="far fa-clock text-primary me-2"></i> Meetings
+        </li>
+
+            <hr class="divider bg-primary"/>
+            <div class="divider-header text-muted fs-6">Admin Only</div>
+
+        <!-- Feeds Category -->
+        {% if user.query.filter_by(verification_status=False).count() > 0 and current_user.membership %}
+            <li onclick="showSection('feeds')" id="feeds-link">
+                <i class="fas fa-rss text-danger me-2"></i> Feeds
+                <span class="badge bg-warning rounded-pill">{{ user.query.filter_by(verification_status=False).count() }} <small>unverified</small></span>
+            </li>
+        {% endif %}
+
+        <!-- Settings Category -->
+        {% if current_user.role.name in ['admin', 'system'] %}
+            <li onclick="showSection('settings')" id="settings-link">
+                <i class="fas fa-cog text-info me-2"></i> Settings
+            </li>
+        {% endif %}
+
+        <!-- Audits Category -->
+        {% if current_user.id == 1 %}
+            <li onclick="showSection('audits')" id="audits-link">
+                <i class="fas fa-clipboard-check text-primary me-2"></i> Audits
+            </li>
+        {% endif %}
+    </ul>
+</div>

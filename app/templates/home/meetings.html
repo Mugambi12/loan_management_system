@@ -1,0 +1,333 @@
+<!-- Updated Meetings Management Section -->
+
+<div id="meetings" class="section">
+    <div class="container-fluid">
+        <div class="h2 text-center text-dark mb-3">Meetings Management</div>
+        <p class="text-center fst-italic text-muted">Schedule meetings, add meeting records, and manage meetings</p>
+
+        <!-- Tab Navigation -->
+        {% if current_user.role.name in ['system', 'secretary'] %}
+            <ul class="nav nav-pills justify-content-around border-0 bg-light rounded-pill p-2" id="meetingsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link rounded-pill active" id="details-tab" data-bs-toggle="tab" href="#details" role="tab" aria-controls="details" aria-selected="true">Meeting Details</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link rounded-pill" id="input-tab" data-bs-toggle="tab" href="#input" role="tab" aria-controls="input" aria-selected="false">Meeting Settings</a>
+                </li>
+            </ul>
+        {% endif %}
+
+        <!-- Tab Content -->
+        <div class="tab-content mt-3">
+            <!-- Meeting Details Tab -->
+            <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                <div class="container-fluid">
+                    <div class="row">
+                        <!-- Scheduled Meetings -->
+                        <div class="col-md-12 mb-3 scheduledMeetings">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header border-0">Scheduled Meetings</div>
+                                <div class="card-body" id="scheduledMeetingsContent">
+                                    <ul class="list-group">
+                                        {% if records and records|length > 0 %}
+                                            {% set reversed_meetings = records|selectattr('category', 'equalto', 'meetings')|reverse %}
+                                            {% for record in reversed_meetings[:3] %}
+
+                                                {% set is_future_date = record.meeting_date > now %}
+                                                <li class="list-group-item border-0 rounded mb-2 {% if is_future_date %}bg-light-success text-dark{% else %}text-muted{% endif %}">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong>{{ record.title }}</strong> meeting at
+                                                            <strong>{{ record.location }}</strong> on
+                                                            <strong>{{ record.meeting_date.strftime('%d-%m-%Y') }}</strong> at
+                                                            <strong>{{ record.meeting_date.strftime('%H:%M') }}</strong> for all
+                                                            <strong>{{ record.invitees }}</strong>.
+                                                            {{ record.description }}.
+                                                            <span class="d-block"><a href="{{ record.location_address }}">{{ record.location }}</a></span>
+                                                        </div>
+                                                        <div class="timestamp text-end">
+                                                            <span class="small {% if is_future_date %}text-dark{% endif %}">{{ record.timestamp.strftime('%H:%M %d-%m-%Y') }}</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                            {% for record in reversed_meetings[3:] %}
+                                                <!-- Read More Link -->
+                                                <li class="list-group-item border-0 {% if is_future_date %}bg-light-success text-dark{% else %}text-muted{% endif %} extraContent" style="display: none;">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong>{{ record.title }}</strong> meeting at
+                                                            <strong>{{ record.location }}</strong> on
+                                                            <strong>{{ record.meeting_date.strftime('%d-%m-%Y') }}</strong> at
+                                                            <strong>{{ record.meeting_date.strftime('%H:%M') }}</strong> for all
+                                                            <strong>{{ record.invitees }}</strong>.
+                                                            {{ record.description }}.
+                                                            <span class="d-block"><a href="{{ record.location_address }}">{{ record.location }}</a></span>
+                                                        </div>
+                                                        <div class="timestamp text-end">
+                                                            <span class="small">{{ record.timestamp.strftime('%H:%M %d-%m-%Y') }}</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                            <a class="btn btn-link text-decoration-none float-end readMoreBtn" role="button" onclick="showMore('scheduledMeetings')">Read More</a>
+                                        {% else %}
+                                            <p>No scheduled meetings available.</p>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-7 mb-3">
+                                <!-- Key Documents -->
+                                <div class="mb-3 keyDocuments">
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-header border-0">Key Documents</div>
+                                        <div class="card-body" id="keyDocumentsContent">
+
+                                            <ul class="list-group">
+                                                {% if records and records|length > 0 %}
+                                                    {% set reversed_archives = records|selectattr('category', 'equalto', 'archives')|reverse|list %}
+                                                    {% for record in reversed_archives[:3] %}
+                                                        <li class="list-group-item border-0 mb-2 text-secondary">
+                                                            <a href="{{ record.document_path }}" download="{{ record.document_path }}">
+                                                                <span class="btn bg-outline-secondary"><i class="fas fa-download text-dark"></i></span>
+                                                            </a>
+                                                            <strong>{{ record.title }}:</strong> {{ record.description }}
+                                                            <span class="timestamp float-end small">{{ record.timestamp.strftime('%H:%M %d-%m-%Y') }}</span>
+                                                        </li>
+                                                    {% endfor %}
+                                                    {% for record in reversed_archives[3:] %}
+                                                        <!-- Read More Link -->
+                                                        <li class="list-group-item border-0 mb-2 text-secondary extraContent" style="display: none;">
+                                                            <a href="{{ record.document_path }}" download="{{ record.document_path }}">
+                                                                <span class="btn bg-outline-secondary"><i class="fas fa-download text-dark"></i></span>
+                                                            </a>
+                                                            <strong>{{ record.title }}:</strong> {{ record.description }}
+                                                            <span class="timestamp float-end small">{{ record.timestamp.strftime('%H:%M %d-%m-%Y') }}</span>
+                                                        </li>
+                                                    {% endfor %}
+                                                    <a class="btn btn-link text-decoration-none float-end readMoreBtn" role="button" onclick="showMore('keyDocuments')">Read More</a>
+                                                {% else %}
+                                                    <p>No key documents available.</p>
+                                                {% endif %}
+                                            </ul>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Recent Activities -->
+                                <div class="mb-3 recentActivities">
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-header border-0">Recent Activities</div>
+                                        <div class="card-body" id="recentActivitiesContent">
+                                            <ul class="list-group">
+                                                {% if records and records|length > 0 %}
+                                                    {% set reversed_activities = records|reverse|list %}
+                                                    {% for record in reversed_activities[:6] %}
+                                                    <li class="list-group-item mb-2 border-0">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <strong>{{ record.title.title() }}</strong>:
+                                                                <span>{{ record.description }}</span>
+                                                                <span class="fts-italics">{{ record.tags.lower() }}</span>
+                                                            </div>
+                                                            <div class="timestamp small">
+                                                                {{ record.timestamp.strftime('%H:%M %d-%m-%Y') }}
+                                                            </div>
+                                                        </div>
+                                                    </li>
+
+                                                    {% endfor %}
+                                                    {% for record in reversed_activities[6:] %}
+                                                        <!-- Read More Link -->
+                                                        <li class="list-group-item mb-2 border-0 extraContent" style="display: none;">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <strong>{{ record.title.title() }}</strong>:
+                                                                    <span>{{ record.description }}</span>
+                                                                    <span class="fts-italics">{{ record.tags.lower() }}</span>
+                                                                </div>
+                                                                <div class="timestamp small">
+                                                                    {{ record.timestamp.strftime('%H:%M %d-%m-%Y') }}
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                    <a class="btn btn-link text-decoration-none float-end readMoreBtn" role="button" onclick="showMore('recentActivities')">Read More</a>
+                                                {% else %}
+                                                    <p>No recent activities available.</p>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reminder List -->
+                            <div class="col-md-5 mb-3">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header border-0">Reminders</div>
+                                    <div class="card-body" id="reminderContent">
+                                        <form method="POST" action="{{ url_for('routes.reminders') }}">
+                                            {{ reminder_form.csrf_token }}
+                                            <div class="mb-3">
+                                                <div class="input-group">
+                                                    {{ reminder_form.text(class="form-control rounded-pill", placeholder="Enter your reminder") }}
+                                                    <button class="btn btn-outline-success rounded-pill ms-2" type="submit">
+                                                        <i class="fas fa-plus fst-bold"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <ul id="reminderList" class="list-group">
+                                            {% for reminder in reminders | reverse %}
+                                                <li class="list-group-item {% if reminder.completed %}done{% endif %}">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <form method="POST" action="{{ url_for('routes.toggle_completed', reminder_id=reminder.id) }}" class="form-check m-0">
+                                                            {{ reminder_form.csrf_token }}
+
+                                                            <input type="checkbox" class="form-check-input rounded" id="toggle-{{ reminder.id }}" onchange="this.form.submit()" {% if reminder.completed %}checked{% endif %}>
+                                                            <label class="form-check-label {% if reminder.completed %}text-muted text-decoration-line-through{% else %}text-dark{% endif %}" for="toggle-{{ reminder.id }}">
+                                                                {{ reminder.text }}
+                                                            </label>
+                                                        </form>
+
+                                                        <form method="POST" action="{{ url_for('routes.delete_reminder', reminder_id=reminder.id) }}" class="d-inline">
+                                                            {{ reminder_form.csrf_token }}
+                                                            <button type="submit" class="btn btn-sm text-danger delete-btn" title="Delete Reminder">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Read More Details Sections -->
+                        <script>
+                            function showMore(section) {
+                                // Toggle visibility of extra content for the specified section
+                                const extraContentList = document.querySelectorAll(`.${section} .extraContent`);
+                                extraContentList.forEach(extraContent => {
+                                    extraContent.style.display = extraContent.style.display === 'none' ? 'block' : 'none';
+                                });
+
+                                // Change the label based on the visibility
+                                const readMoreLink = document.querySelector(`.${section} .readMoreBtn`);
+                                if (readMoreLink) {
+                                    readMoreLink.textContent = extraContentList[0].style.display === 'none' ? 'Read More' : 'Read Less';
+                                }
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Meeting Settings Tab -->
+            <div class="tab-pane fade" id="input" role="tabpanel" aria-labelledby="input-tab">
+                <div class="container-fluid mb-3">
+                    <div class="col-md-11 mx-auto row">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header border-0">Add Document</div>
+                            <!-- Form for adding Document -->
+                            <form method="POST" action="{{ url_for('routes.submit_record') }}" enctype="multipart/form-data">
+                                {{ records_form.hidden_tag() }}
+
+                                <div class="card-body">
+                                    <div class="container">
+                                        <div class="row">
+                                            <!-- Title and Category -->
+                                            <div class="mb-2 col-md-6">
+                                                <label for="title" class="form-label">Title:</label>
+                                                {{ records_form.title(class="form-control rounded-pill", placeholder="Enter document title") }}
+                                            </div>
+                                            <div class="mb-2 col-md-6">
+                                                <label for="category" class="form-label">Category:</label>
+                                                {{ records_form.category(class="form-select rounded-pill", id="category", onchange="toggleFields()") }}
+                                            </div>
+
+                                            <!-- Document Fields -->
+                                            <div class="mb-2 col-md-6 document-fields" style="display: none;">
+                                                <label for="document" class="form-label">Upload Document:</label>
+                                                {{ records_form.document(class="form-control rounded-pill") }}
+                                            </div>
+                                            <div class="mb-2 col-md-6 document-fields" style="display: none;">
+                                                <label for="tags" class="form-label">Document Tags:</label>
+                                                {{ records_form.tags(class="form-control rounded-pill", placeholder="Enter tags (comma-separated)") }}
+                                            </div>
+
+                                            <!-- Meeting Fields -->
+                                            <div class="mb-2 col-md-6 meeting-fields" style="display: none;">
+                                                <label for="invitees" class="form-label">Meeting Invitees:</label>
+                                                {{ records_form.invitees(class="form-select rounded-pill") }}
+                                            </div>
+                                            <div class="mb-2 col-md-6 meeting-fields" style="display: none;">
+                                                <label for="meeting_date" class="form-label">Select Meeting Date:</label>
+                                                {{ records_form.meeting_date(class="form-control rounded-pill") }}
+                                            </div>
+                                            <div class="mb-2 col-md-6 meeting-fields" style="display: none;">
+                                                <label for="location" class="form-label">Meeting Location:</label>
+                                                {{ records_form.location(class="form-control rounded-pill", placeholder="Enter meeting location") }}
+                                            </div>
+                                            <div class="mb-2 col-md-6 meeting-fields" style="display: none;">
+                                                <label for="location_address" class="form-label">Meeting Location Address:</label>
+                                                {{ records_form.location_address(class="form-control rounded-pill", placeholder="Enter meeting location address") }}
+                                            </div>
+
+                                            <!-- Description -->
+                                            <div class="mb-2 col-md-12">
+                                                <label for="description" class="form-label">Description:</label>
+                                                {{ records_form.description(class="form-control rounded", rows="3", placeholder="Enter document description") }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Script to Dynamically Change the Form Content -->
+                                <script>
+                                    function toggleFields() {
+                                        var selectedCategory = document.getElementById('category').value;
+
+                                        // Get all form elements related to documents and meetings
+                                        var documentFields = document.querySelectorAll('.document-fields');
+                                        var meetingFields = document.querySelectorAll('.meeting-fields');
+
+                                        // Hide all fields initially
+                                        documentFields.forEach(function (field) {
+                                            field.style.display = 'none';
+                                        });
+
+                                        meetingFields.forEach(function (field) {
+                                            field.style.display = 'none';
+                                        });
+
+                                        // Show the relevant fields based on the selected category
+                                        if (selectedCategory === 'archives') {
+                                            documentFields.forEach(function (field) {
+                                                field.style.display = 'block';
+                                            });
+                                        } else if (selectedCategory === 'meetings') {
+                                            meetingFields.forEach(function (field) {
+                                                field.style.display = 'block';
+                                            });
+                                        }
+                                    }
+                                </script>
+
+                                <div class="card-footer text-center">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Save Updates</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <!-- Back to Loans -->
+    <ul class="nav nav-pills justify-content-start border-0">
+        <li class="nav-item">
+            <a class="nav-link rounded-pill" href="{{ url_for('routes.dashboard') }}">
+                <i class="fas fa-arrow-left me-2"></i> Back to Loans
+            </a>
+        </li>
+    </ul>
+
+    <!-- Edit Loan Form -->
+    <div class="col-md-10 mx-auto p-3 mb-3">
+        <form method="post" action="{{ url_for('routes.edit_loan', loan_id=loan.id) }}">
+            {{ form.csrf_token }}
+            <div class="card shadow-sm border-0">
+                <!-- Display form validation errors -->
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="card-header h5 text-center text-dark">Edit Loan Details</div>
+                <div class="card-body">
+                    <div class="h6 text-center fst-italic text-muted mb-3">We Value Each of Our Customers.</div>
+                    <div class="row">
+                        <!-- First Column -->
+                        <div class="{% if current_user.role.name in ['admin', 'system'] %} col-md-4 {% else %} col-md-6 {% endif %}">
+                            <div class="mb-2">
+                                <label for="customer_name" class="form-label">Customer Name</label>
+                                {{ form.customer_name(class="form-control", required=True) }}
+                            </div>
+                            <div class="mb-2">
+                                <label for="guarantor_name" class="form-label">Guarantor Name</label>
+                                {{ form.guarantor_name(class="form-control", required=True) }}
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="loan_type" class="form-label">Loan Type</label>
+                                {{ form.loan_type(class="form-control", required=True) }}
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="loan_duration" class="form-label">Loan Duration</label>
+                                {{ form.loan_duration(class="form-control", required=True) }}
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="interest_rate" class="form-label">Interest Rate</label>
+                                {{ form.interest_rate(class="form-control", required=True) }}
+                            </div>
+                        </div>
+
+                        <!-- Second Column -->
+                        <div class="{% if current_user.role.name in ['admin', 'system'] %} col-md-4 {% else %} col-md-6 {% endif %}">
+                            <div class="mb-2">
+                                <label for="principal" class="form-label">Principal Amount</label>
+                                {{ form.principal(class="form-control", required=True) }}
+                            </div>
+
+                            {% if current_user.role.name in ['admin', 'system'] %}
+                            <div class="mb-2">
+                                <label for="service_cost" class="form-label">Service Cost</label>
+                                {{ form.service_cost(class="form-control", required=True) }}
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="fines" class="form-label">Fines</label>
+                                {{ form.fines(class="form-control") }}
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="loan_duration" class="form-label">Partial Issued</label>
+                                {{ form.partial_issuance(class="form-control", required=True) }}
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="loan_duration" class="form-label">Partial Paid</label>
+                                {{ form.partial_payment(class="form-control", required=True) }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+
+                        <!-- Third Column -->
+                        {% if current_user.role.name in ['admin', 'system'] %}
+                        <div class="col-md-4">
+                            <div class="mb-2">
+                                <label for="approval_timestamp" class="form-label">Approval Date</label>
+                                {{ form.approval_timestamp(class="form-control") }}
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="issuance_timestamp" class="form-label">Issuance Date</label>
+                                {{ form.issuance_timestamp(class="form-control") }}
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="payment_timestamp" class="form-label">Repayment Date</label>
+                                {{ form.payment_timestamp(class="form-control") }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="card-footer text-center border-0">
+                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Save Changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

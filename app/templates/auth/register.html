@@ -1,0 +1,236 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="d-flex flex-column align-items-center justify-content-center min-vh-100">
+    <div class="container-fluid">
+        <div class="col-md-6 mx-auto shadow-sm p-4 bg-light">
+
+            <!-- Registration Page Title -->
+            <h3 class="text-center text-primary mb-3">Register</h3>
+            <form id="registration-form" method="post">
+                {{ form.csrf_token }}
+
+                <!-- Personal Information -->
+                <div class="step" data-step="1">
+                    <p class="mb-3 text-center text-muted fst-italic">Personal Information</p>
+                    <div class="row">
+                        <!-- First Name Fields -->
+                        <div class="col-md-6 mb-3">
+                        <label for="first_name" class="form-label"
+                            ><i class="fas fa-user text-primary"></i> First Name
+                            <span class="text-danger">*</span></label
+                        >
+                        <input
+                            type="text"
+                            name="first_name"
+                            id="first_name"
+                            class="form-control rounded-pill"
+                            placeholder="First Name"
+                            required
+                        />
+                        </div>
+                        <!-- Last Name Fields -->
+                        <div class="col-md-6 mb-3">
+                        <label for="last_name" class="form-label"
+                            ><i class="fas fa-user text-primary"></i> Last Name
+                            <span class="text-danger">*</span></label
+                        >
+                        <input
+                            type="text"
+                            name="last_name"
+                            id="last_name"
+                            class="form-control rounded-pill"
+                            placeholder="Last Name"
+                            required
+                        />
+                        </div>
+                        <!-- Email Fields -->
+                        <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label"
+                            ><i class="fas fa-envelope text-info"></i> Email
+                            <span class="text-danger">*</span></label
+                        >
+                        <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            class="form-control rounded-pill"
+                            placeholder="Email"
+                            required
+                        />
+                        </div>
+                        <!-- Mobile Number Fields -->
+                        <div class="col-md-6 mb-3">
+                        <label for="mobile_number" class="form-label"
+                            ><i class="fas fa-mobile-alt text-info"></i> Mobile Number
+                            <span class="text-danger">*</span></label
+                        >
+                        <input
+                            type="text"
+                            name="mobile_number"
+                            id="mobile_number"
+                            class="form-control rounded-pill"
+                            placeholder="Mobile Number"
+                            required
+                        />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Educational Information -->
+                <div class="step" data-step="2">
+                    <p class="mb-3 text-center text-muted fst-italic">Educational Information</p>
+                    <div class="row">
+                        <!-- ID Number Fields -->
+                        <div class="col-md-6 mb-3">
+                            <label for="id_number" class="form-label"
+                                ><i class="fas fa-id-card text-warning"></i> ID Number
+                                <span class="text-danger">*</span></label
+                            >
+                            <input
+                                type="text"
+                                name="id_number"
+                                id="id_number"
+                                class="form-control rounded-pill"
+                                placeholder="ID Number"
+                                required
+                            />
+                        </div>
+                        <!-- Education Level Fields -->
+                        <div class="col-md-6 mb-3">
+                            <label for="education_level" class="form-label"
+                                ><i class="fas fa-graduation-cap text-warning"></i>
+                                Education Level <span class="text-danger">*</span></label
+                            >
+                            {{ form.education_level(class="form-control rounded-pill px-3", required=True)
+                            }}
+                        </div>
+                        <!-- Occupation Fields -->
+                        <div class="col-md-6 mb-3">
+                            <label for="occupation" class="form-label"
+                                ><i class="fas fa-briefcase text-warning"></i> Occupation
+                                <span class="text-danger">*</span></label
+                            >
+                            <input
+                                type="text"
+                                name="occupation"
+                                id="occupation"
+                                class="form-control rounded-pill"
+                                placeholder="Occupation"
+                                required
+                            />
+                        </div>
+                        <!-- Date of Birth Fields -->
+                        <div class="col-md-6 mb-3">
+                            <label for="dob" class="form-label"
+                                ><i class="fas fa-calendar-alt text-warning"></i> Date of
+                                Birth <span class="text-danger">*</span></label
+                            >
+                            <input
+                                type="date"
+                                name="dob"
+                                id="dob"
+                                class="form-control rounded-pill"
+                                required
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Information -->
+                <div class="step" data-step="3">
+                    <p class="mb-3 text-center text-muted fst-italic">Account Information</p>
+                    <div class="row mb-3">
+                        <!-- Password Fields -->
+                        <div class="col-md-6">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock text-success"></i> Password
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    class="form-control"
+                                    placeholder="Password"
+                                    required
+                                />
+                                <button
+                                    class="btn btn-outline-secondary text-dark"
+                                    type="button"
+                                    onclick="togglePassword('password', 'password_icon')"
+                                    title="Toggle Password Visibility"
+                                >
+                                    <i id="password_icon" class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password Fields -->
+                        <div class="col-md-6">
+                            <label for="confirm_password" class="form-label">
+                                <i class="fas fa-lock text-success"></i> Confirm Password
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input
+                                    type="password"
+                                    name="confirm_password"
+                                    id="confirm_password"
+                                    class="form-control"
+                                    placeholder="Confirm Password"
+                                    required
+                                />
+                                <button
+                                    class="btn btn-outline-secondary text-dark"
+                                    type="button"
+                                    onclick="togglePassword('confirm_password', 'confirm_password_icon')"
+                                    title="Toggle Password Visibility"
+                                >
+                                    <i id="confirm_password_icon" class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="d-flex justify-content-between mt-3">
+                    <button
+                        class="btn btn-secondary rounded-pill"
+                        type="button"
+                        id="prevStep"
+                        style="display: none"
+                    >
+                        Previous
+                    </button>
+                    <button
+                        class="btn btn-primary rounded-pill"
+                        type="button"
+                        id="nextStep"
+                    >
+                        Next
+                    </button>
+                    <button
+                        class="btn btn-primary rounded-pill"
+                        type="submit"
+                        id="submitBtn"
+                        style="display: none"
+                    >
+                        Submit
+                    </button>
+                </div>
+            </form>
+
+            <!-- Login Link -->
+            <p class="mt-3 text-center">
+                Already have an account?
+                <a href="{{ url_for('routes.login') }}" class="text-primary">Login here</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/registration_steps_navigation_controller.js') }}"></script>
+
+{% endblock %}

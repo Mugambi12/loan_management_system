@@ -1,0 +1,165 @@
+<!-- Users Management Section -->
+
+<div id="users" class="section">
+    <div class="container-fluid">
+
+        <ul class="nav nav-pills border-0 rounded-pill {% if current_user.membership %} justify-content-around bg-light p-2 {% else %} justify-content-end {% endif %}" role="tablist">
+            {% if current_user.membership %}
+            <li class="nav-item" role="presentation">
+                <a class="nav-link rounded-pill {% if not current_user.membership %} active {% endif %}" id="personal-profile-tab" data-bs-toggle="tab" href="#personal-profile" role="tab" aria-controls="personal-profile" aria-selected="true">Personal Profile</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link rounded-pill {% if current_user.membership %} active {% endif %}" id="users-info-tab" data-bs-toggle="tab" href="#users-info" role="tab" aria-controls="users-info" aria-selected="false">View All Users</a>
+            </li>
+            {% endif %}
+            <!-- Edit Profile Link -->
+            <li class="nav-item justify-content-end">
+                <a href="{{ url_for('routes.edit_user', user_id=current_user.id) }}" class="nav-link rounded-pill">Edit Profile </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Personal Profile -->
+            <div class="tab-pane fade {% if not current_user.membership %} show active {% endif %}" id="personal-profile" role="tabpanel" aria-labelledby="personal-profile-tab">
+                <div class="col-md-10 mx-auto p-3 mb-3">
+                    <div class="h2 text-center text-dark mb-3">Profile Management</div>
+                    <center class="mt-4">
+                    <img
+                        id="profile-picture"
+                        class="img-fluid rounded-circle profile-picture"
+                        src="{{ url_for('static', filename='uploads/profiles/' + user.profile_picture if user.profile_picture else 'images/profile.svg') }}"
+                        alt="User Profile Picture"
+                        style="width: 150px; height: 150px"
+                        loading="lazy"
+                    />
+                    </center>
+
+                    <div class="row mt-5">
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">First Name:</label>
+                            <strong>{{ current_user.first_name.title() }}</strong>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">Last Name:</label>
+                            <strong>{{ current_user.last_name.title() }}</strong>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">Email:</label>
+                            <strong>{{ current_user.email }}</strong>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">Mobile Number:</label>
+                            <strong>{{ current_user.mobile_number }}</strong>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">ID Number:</label>
+                            <strong>{{ current_user.id_number }}</strong>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">Education Level:</label>
+                            <strong>{{ current_user.education_level.title() }}</strong>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">Occupation:</label>
+                            <strong>{{ current_user.occupation.title() }}</strong>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">Date of Birth:</label>
+                            <strong>{{ current_user.dob }}</strong>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">Number of Loans:</label>
+                            <strong>{{ total_loans_as_customer }}</strong>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-label">Role:</label>
+                            <strong class="badge bg-primary rounded-pill"
+                            >{{ current_user.role.name.title() }}</strong
+                            >
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-check-label" for="membership">Membership:</label>
+                            <span
+                            class="badge {% if current_user.membership %}bg-success{% else %}bg-info{% endif %} rounded-pill"
+                            >
+                            {% if current_user.membership %} Member {% else %} Non-Member {%
+                            endif %}
+                            </span>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="form-check-label" for="membership">Verification:</label>
+                            <span
+                            class="badge {% if current_user.verification_status %}bg-success{% else %}bg-danger{% endif %} rounded-pill"
+                            >
+                            {% if current_user.verification_status %} Verified {% else %}
+                            Non-Verified {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View All Users -->
+            <div class="tab-pane fade {% if current_user.membership %} show active {% endif %}" id="users-info" role="tabpanel" aria-labelledby="users-info-tab">
+                {% if current_user.membership %}
+                <div class="h2 text-center text-dark mb-3 mt-2">All Members</div>
+                <p class="text-center fst-italic text-muted">Explore and manage all users, optimizing customer acquisition and minimizing acquisition costs.</p>
+                <div class="card">
+                    <div class="card-header">All Users Data tables</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="example" class="table table-striped data-table text-center">
+                            <thead class="table-primary">
+                                <tr>
+                                <th scope="col">Full Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Mobile No.</th>
+                                <th scope="col">ID No.</th>
+                                <th scope="col">Occupation</th>
+                                <th scope="col">DoB</th>
+                                <th scope="col">Membership</th>
+                                <th scope="col">Verification</th>
+                                <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users | reverse %} {% if user.verification_status and user.id != 1 %}
+                                <tr>
+                                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.mobile_number }}</td>
+                                <td>{{ user.id_number }}</td>
+                                <td>{{ user.occupation }}</td>
+                                <td>{{ user.dob.strftime('%d-%m-%Y') }}</td>
+                                <td>
+                                    {% if user.membership %}
+                                        <span class="badge bg-primary">Member</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Customer</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.verification_status %}
+                                        <span class="badge bg-success">Verified</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Not Verified</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if current_user.id == user.id or not user.membership or
+                                    current_user.role.name in ['admin', 'system'] %}
+                                    <a href="{{ url_for('routes.edit_user', user_id=user.id) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                                    {% endif %}
+                                </td>
+                                </tr>
+                                {% endif %} {% endfor %}
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

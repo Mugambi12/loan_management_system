@@ -1,0 +1,72 @@
+<!-- Settings Section -->
+
+<div id="audits" class="section">
+    <div class="container-fluid">
+        <div class="h2 text-center text-dark mb-3">Audit Trails</div>
+        <p class="text-center fst-italic text-muted">Keep Track of All Activities by Users.</p>
+        <div class="row">
+            {% if user.membership %}
+            <div class="col-md-12">
+
+                <div class="card">
+                    <div class="card-header">Audit Trails Data tables</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table
+                            id="example"
+                            class="table table-striped data-table text-center"
+                            style="width: 100%"
+                            >
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Amount</th>
+                                    <th>Fine/Cost</th>
+                                    <th>Transaction</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contribution in contributions | reverse %}
+                                    <tr>
+                                        <td>{{ contribution.contributor.title() }}</td>
+                                        <td>{{ contribution.timestamp.strftime('%d/%m/%Y') }}</td>
+                                        <td>{{ contribution.timestamp.strftime('%H:%M:%S') }}</td>
+                                        <td>KES {{ "%0.2f"|format(contribution.amount) }}</td>
+                                        <td>KES {{ "%0.2f"|format(contribution.fine_amount) }}</td>
+                                        <td>
+                                            {% if contribution.transaction_type %}
+                                                <span class="text-success">Contribution</span>
+                                            {% else %}
+                                                <span class="text-danger">Welfare</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                        <a href="/edit_contribution/{{ contribution.id }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Amount</th>
+                                    <th>Fine/Cost</th>
+                                    <th>Transaction</th>
+                                    <th>Action</th>
+                                </tr>
+                            </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {% endif %}
+        </div>
+</div>
+</div>

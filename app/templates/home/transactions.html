@@ -1,0 +1,73 @@
+<!-- Transactions Section -->
+
+<div id="transactions" class="section py-3">
+    <div class="container-fluid">
+        <h2 class="text-center text-dark mb-3">Transactions Management</h2>
+        <p class="text-center fst-italic text-muted">Empowering Futures, One Transaction at a Time.</p>
+
+        <!-- Transactions Form -->
+        <div class="col-md-10 mx-auto p-3 mt-4 mb-3">
+            <form action="/submit_contribution" method="post">
+                {{ contribution_form.csrf_token }}
+                <div class="card shadow-sm">
+                    <div class="card-header h5 text-center text-dark mb-3">Add a New Transaction</div>
+                    <div class="card-body row">
+                        <!-- Member Information -->
+                        <div class="col-md-6 mb-3 px-3">
+                            <label for="members_name" class="form-label">Member's Name:</label>
+                            {{ contribution_form.members_name(class="form-control rounded-pill", required=True)}}
+                            <script>
+                                $(document).ready(function () {
+                                    $("#members_name").select2({
+                                        placeholder: "Type to search...",
+                                        allowClear: true,
+                                        tags: true,
+                                    });
+                                });
+                            </script>
+                        </div>
+
+                        <!-- Transactions Details -->
+                        <div class="col-md-6 mb-3 px-3">
+                            <label for="amount" class="form-label">Contribution Amount (KES):</label>
+                            <input type="number" class="form-control rounded-pill" id="amount" name="amount" min="0" step="0.01" required />
+                        </div>
+
+                        <!-- Transactions Type -->
+                        <div class="col-md-6 mb-3 px-3">
+                            <label for="transaction_type" class="form-label">Transaction Type:</label>
+                            <select class="form-select rounded-pill" id="transaction_type" name="transaction_type" required>
+                                <option value="true">Contribution</option>
+                                <option value="false">Welfare</option>
+                            </select>
+                        </div>
+
+                        <!-- Fine Amount (if applicable) / Transaction Cost -->
+                        <div class="col-md-6 mb-3 px-3">
+                            <label for="fine_amount" class="form-label" id="fine-amount-label">Fine Amount (KES):</label>
+                            <input type="number" class="form-control rounded-pill" id="fine_amount" name="fine_amount" min="0" step="0.01" />
+                        </div>
+                        <script>
+                            // Add an event listener to the select element
+                            $('#transaction_type').on('change', function() {
+                                // Get the selected value
+                                var selectedValue = $(this).val();
+
+                                // Update the label based on the selected value
+                                if (selectedValue === 'true') {
+                                    $('#fine-amount-label').text('Fine Amount (KES):');
+                                } else {
+                                    $('#fine-amount-label').text('Transaction Cost (KES):');
+                                }
+                            });
+                        </script>
+                    </div>
+                    <!-- Submit Button -->
+                    <div class="card-footer text-center border-0">
+                        <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Submit Contribution</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

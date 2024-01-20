@@ -1,0 +1,71 @@
+<!-- Feeds Users Section -->
+
+<div id="feeds" class="section">
+    <div class="container-fluid">
+        <div class="h2 text-center text-dark mb-3">Feeds Management</div>
+        <p class="text-center fst-italic text-muted">Explore and manage unverified users.</p>
+
+        <div class="row">
+            {% if current_user.membership %}
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">New Unverified Users Data tables</div>
+                    <div class="card-body">
+                        <!-- Data Table -->
+                        <div class="table-responsive mt-4">
+                        <table id="example" class="table table-striped data-table text-center">
+                            <thead class="table-primary">
+                            <tr>
+                                <th scope="col">Full Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Mobile No.</th>
+                                <th scope="col">ID No.</th>
+                                <th scope="col">Education</th>
+                                <th scope="col">Occupation</th>
+                                <th scope="col">DoB</th>
+                                <th scope="col">Membership</th>
+                                <th scope="col">Verification</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in users %}
+                            {% if not user.verification_status %}
+                            <tr>
+                                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.mobile_number }}</td>
+                                <td>{{ user.id_number }}</td>
+                                <td>{{ user.education_level }}</td>
+                                <td>{{ user.occupation }}</td>
+                                <td>{{ user.dob.strftime('%d-%m-%Y') }}</td>
+                                <td>
+                                {% if user.membership %}
+                                <span class="badge bg-primary">Member</span>
+                                {% else %}
+                                <span class="badge bg-info">Customer</span>
+                                {% endif %}
+                                </td>
+                                <td>
+                                {% if user.verification_status %}
+                                <span class="badge bg-success">Verified</span>
+                                {% else %}
+                                <span class="badge bg-danger">Not Verified</span>
+                                {% endif %}
+                                </td>
+                                <td>
+                                <a href="{{ url_for('routes.edit_user', user_id=user.id) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
