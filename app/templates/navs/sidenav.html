@@ -1,7 +1,9 @@
+<!-- Copyright © 2024 Silas Mugambi. All rights reserved. -->
+
 <!-- Sidebar Management Section -->
 
 <div class="sidebar" id="customSidebar">
-    <ul>
+    <ul class="mb-5">
         <!-- Dashboard Category -->
         <li onclick="showSection('dashboard')" id="dashboard-link" class="active">
             <i class="fas fa-tachometer-alt text-primary me-2"></i> Dashboard
@@ -62,9 +64,16 @@
 
         <!-- Audits Category -->
         {% if current_user.id == 1 %}
-            <li onclick="showSection('audits')" id="audits-link">
+            <li onclick="showSection('audits')" id="audits-link" class="mb-5">
                 <i class="fas fa-clipboard-check text-primary me-2"></i> Audits
             </li>
         {% endif %}
+
+        <!-- Copyright notice with dynamic year -->
+        <div class="copyright-notice text-center mt-auto px-3 text-muted" style="position: fixed; bottom: 5px;">
+            <small>&copy; <b class="text-dark"><script>document.write(new Date().getFullYear())</script>
+            </b> Silas Mugambi. <br> All rights reserved. </small>
+        </div>
+
     </ul>
 </div>

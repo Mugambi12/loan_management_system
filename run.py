@@ -51,4 +51,4 @@ schedule.add_job(id='process_fines', func=process_fines, trigger='interval', hou
 
 if __name__ == '__main__':
     schedule.start()
-    app.run()
+    app.run(debug=True, host='0.0.0.0')

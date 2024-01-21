@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Loan Management System is a Flask-based web application designed to efficiently handle loans, user accounts, and system settings. The application offers a user-friendly interface for seamless management of various loan-related operations.
+The Loan Management System is a Flask-based web application meticulously crafted to efficiently handle loans, user accounts, and system settings. Whether born out of the needs of a local group or developed using Python, Bootstrap, JavaScript, CSS, HTML, and Jinja2, this GitHub repository houses an efficient solution designed to streamline the loan management process seamlessly. The system offers a user-friendly interface, making it a valuable tool for effective loan tracking and administration within various contexts.
 
 ## Table of Contents
 
@@ -61,7 +61,7 @@ Ensure you have the following installed:
 2. Run the application:
 
    ```bash
-   python app.py
+   python run.py
    ```
 
 3. Open your web browser and go to [http://localhost:5000](http://localhost:5000).
@@ -69,22 +69,47 @@ Ensure you have the following installed:
 ## Usage
 
 1. Register for an account or log in if you already have one.
-2. Navigate through the user interface to apply for loans, view loan details, and manage your account.
-3. Administrators can access the admin panel to manage users, approve or decline loan applications, and perform system administration tasks.
+1. Navigate through the user interface to apply for loans, view loan details, and manage your account.
+1. Administrators can access the admin panel to manage users, approve or decline loan applications, and perform system administration tasks.
+
+### Admin Login Details
+
+To access the admin panel, use the following credentials. You will need to log in to the admin panel to verify the created account and grant login access.
+
+- **Email:** admin@mail.com
+- **Password:** Apogen@2023
+
+Note: Please ensure the security of these credentials and change the password after the initial login.
+
 
 ## Contributing
 
-Contributions are welcome! Please follow our [contribution guidelines](CONTRIBUTING.md).
+We welcome contributions to improve the Loan Management System. If you'd like to contribute, please follow our contribution guidelines outlined below:
+
+### Contribution Guidelines
+
+1. Fork the repository.
+1. Create a new branch for your contribution.
+1. Make your changes and ensure they adhere to the project's coding standards.
+1. Test your changes thoroughly.
+1. Commit your changes with a clear and descriptive commit message.
+1. Push your changes to your forked repository.
+1. Submit a pull request to the main repository.
+
+Our maintainers will review your contributions and provide feedback. Thank you for helping enhance the Loan Management System!
+
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE.md).
+This Loan Management System is provided under the [MIT License](LICENSE), making it free for use, modification, and distribution. However, please note that it is not for sale. Feel free to leverage, contribute, and enhance the system for your needs, in adherence to the terms of the MIT License.
 
 ## Acknowledgments
 
-- Special thanks to the Flask community for providing an excellent web framework.
-- Recognition to [ALX Africa](https://www.alxafrica.com/) for their Software Engineering course, contributing to my professional development.
-- Gratitude to the GitHub community for their support, feedback, and collaborative spirit.
-- Heartfelt appreciation to my friends and family for their encouragement and understanding throughout this project.
+I extend my sincere gratitude to the following:
+
+- The Flask community for providing an exceptional web framework that contributed significantly to the development of this project.
+- [ALX Africa](https://www.alxafrica.com/) for their Software Engineering course, a pivotal resource that played a crucial role in my professional development.
+- The GitHub community for their unwavering support, valuable feedback, and collaborative spirit, which greatly enriched the project.
+- My friends and family for their continuous encouragement and steadfast support throughout the entire journey of this project.
 
 ---
