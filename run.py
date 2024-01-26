@@ -35,9 +35,9 @@ def process_fines():
 
             for loan in all_loans:
                 if current_time > loan.payment_timestamp.replace(tzinfo=timezone.utc):
-                    if loan.loan_status == 'fully issued':
+                    if loan.loan_status == 'fully_issued':
                         loan.fines += loan.principal * (loan.interest_rate / 100)
-                    elif loan.loan_status == 'partially paid':
+                    elif loan.loan_status == 'partially_paid':
                         loan.fines += loan.partial_balance * (loan.interest_rate / 100)
 
             db.session.commit()

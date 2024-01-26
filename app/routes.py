@@ -209,6 +209,7 @@ def calculate_users_acquisition_per_month(db, extract, func, User, calendar):
             extract('month', User.timestamp).label('month'),
             func.count(User.id).label('count')
         )
+        .filter(User.id != 1)
         .group_by('year', 'month')
         .order_by('year', 'month')
         .all()
@@ -224,8 +225,8 @@ def calculate_users_acquisition_per_month(db, extract, func, User, calendar):
 def calculate_loans_processed_per_month(db, extract, func, Loan):
     loans_processed_per_month = (
         db.session.query(
-            extract('year', Loan.payment_timestamp).label('year'),
-            extract('month', Loan.payment_timestamp).label('month'),
+            extract('year', Loan.timestamp).label('year'),
+            extract('month', Loan.timestamp).label('month'),
             func.sum(Loan.principal).label('total_principal')
         )
         .group_by('year', 'month')
@@ -246,17 +247,35 @@ def retrieve_loan_status_data(Loan, func):
         'data': [
             Loan.query.filter_by(loan_status='pending').with_entities(func.sum(Loan.principal)).scalar() or 0,
             Loan.query.filter_by(loan_status='approved').with_entities(func.sum(Loan.principal)).scalar() or 0,
-            Loan.query.filter_by(loan_status='fully issued').with_entities(func.sum(Loan.principal)).scalar() or 0,
-            Loan.query.filter_by(loan_status='partially issued').with_entities(func.sum(Loan.principal)).scalar() or 0,
-            Loan.query.filter_by(loan_status='partially paid').with_entities(func.sum(Loan.principal)).scalar() or 0,
-            Loan.query.filter_by(loan_status='fully paid').with_entities(func.sum(Loan.principal)).scalar() or 0,
+            Loan.query.filter_by(loan_status='fully_issued').with_entities(func.sum(Loan.principal)).scalar() or 0,
+            Loan.query.filter_by(loan_status='partially_issued').with_entities(func.sum(Loan.principal)).scalar() or 0,
+            Loan.query.filter_by(loan_status='partially_paid').with_entities(func.sum(Loan.principal)).scalar() or 0,
+            Loan.query.filter_by(loan_status='fully_paid').with_entities(func.sum(Loan.principal)).scalar() or 0,
         ],
         'backgroundColor': ['#FFC107', '#4CAF50', '#FF9800', '#2196F3', '#FF5722', '#8BC34A'],
     }
 
     return loan_status_data
 
+def retrieve_contributions_per_user(db, func, User):
+    contributions_per_user = (
+        db.session.query(
+            User.id,
+            User.first_name,
+            User.last_name,
+            func.sum(Contribution.amount).label('total_contribution')
+        )
+        .join(Contribution)
+        .group_by(User.id, User.first_name, User.last_name)
+        .all()
+    )
 
+    contributions_data = {
+        'labels': [f"{entry.first_name} {entry.last_name}" for entry in contributions_per_user],
+        'data': [entry.total_contribution or 0 for entry in contributions_per_user]
+    }
+
+    return contributions_data
 
 # Routes
 # Auth Management Routes
@@ -377,12 +396,14 @@ def dashboard():
     customer_acquisition_data = calculate_users_acquisition_per_month(db, extract, func, User, calendar)
     loans_processed_data = calculate_loans_processed_per_month(db, extract, func, Loan)
     loan_status_data = retrieve_loan_status_data(Loan, func)
+    contributions_per_user_data = retrieve_contributions_per_user(db, func, User)
 
     # Prepare chart data
     chart_data = {
         'loan_status_data': loan_status_data,
         'customer_acquisition_data': customer_acquisition_data,
-        'loans_processed_data': loans_processed_data
+        'loans_processed_data': loans_processed_data,
+        'contributions_per_user_data': contributions_per_user_data  # Include contributions per user data
     }
 
     # Handle JSON request
@@ -398,6 +419,7 @@ def dashboard():
         loans_approved_count=loans_approved_count,
         total_loans_as_customer=total_loans_as_customer,
         contributions=contributions,
+        contributions_per_user_data=contributions_per_user_data,
         roles=roles,
         loan_types=loan_types,
         loan_durations=loan_durations,
@@ -408,7 +430,6 @@ def dashboard():
         reminders=reminders,
         reminder_form=reminder_form
     )
-
 
 # User Management Routes
 @routes.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
@@ -543,46 +564,36 @@ def add_loan():
 @login_required
 def edit_loan(loan_id):
     loan = Loan.query.get_or_404(loan_id)
-    form = EditLoanForm(obj=loan)  # Populate the form with current loan information
+    form = EditLoanForm(obj=loan)
 
-    # Set the query_factory for dynamic choices
     form.customer_name.choices = get_customer_names()
     form.guarantor_name.choices = get_guarantor_names()
     form.loan_type.choices = get_loan_types()
     form.loan_duration.choices = get_loan_durations()
 
     if form.validate_on_submit():
-        # Update loan information
         form.populate_obj(loan)
 
-        # Check if payment timestamp is provided in the form
         if form.payment_timestamp.data:
             loan.payment_timestamp = form.payment_timestamp.data
         else:
-            # Update loan duration
             loan.loan_duration = form.loan_duration.data
-            # Calculate payment timestamp based on the updated loan duration
             loan.payment_timestamp = datetime.utcnow() + timedelta(days=int(form.loan_duration.data))
 
-        # Check if issuance timestamp is provided in the form
         if form.issuance_timestamp.data:
             loan.issuance_timestamp = form.issuance_timestamp.data
         else:
-            # Calculate issuance timestamp based on the current time
             loan.issuance_timestamp = datetime.utcnow()
 
-        # Check if approval timestamp is provided in the form
         if form.approval_timestamp.data:
             loan.approval_timestamp = form.approval_timestamp.data
         else:
-            # Calculate approval timestamp based on the current time
             loan.approval_timestamp = datetime.utcnow()
 
-        # Commit changes to the database
         db.session.commit()
 
         flash('Loan details have been updated!', 'success')
-        return redirect(url_for('routes.dashboard'))  # Update with your actual route
+        return redirect(url_for('routes.dashboard'))
 
     return render_template('common/edit_loan.html', title='Edit Loan', form=form, loan=loan)
 
@@ -613,7 +624,7 @@ def decline_loan(loan_id):
 def issue_fully(loan_id):
     loan = Loan.query.get(loan_id)
     if loan:
-        loan.loan_status = 'fully issued'
+        loan.loan_status = 'fully_issued'
         loan.issuance_timestamp = datetime.now(timezone.utc) + timedelta(hours=3)
         db.session.commit()
         flash('Loan fully issued successfully.', 'success')
@@ -624,7 +635,7 @@ def issue_fully(loan_id):
 def issue_partially(loan_id):
     loan = Loan.query.get(loan_id)
     if loan:
-        loan.loan_status = 'partially issued'
+        loan.loan_status = 'partially_issued'
         db.session.commit()
         flash('Loan partially issued successfully.', 'success')
     return redirect(url_for('routes.dashboard'))
@@ -634,7 +645,7 @@ def issue_partially(loan_id):
 def paid_partially(loan_id):
     loan = Loan.query.get(loan_id)
     if loan:
-        loan.loan_status = 'partially paid'
+        loan.loan_status = 'partially_paid'
         db.session.commit()
         flash('Loan partially paid successfully.', 'success')
     return redirect(url_for('routes.dashboard'))
@@ -644,7 +655,7 @@ def paid_partially(loan_id):
 def paid_fully(loan_id):
     loan = Loan.query.get(loan_id)
     if loan:
-        loan.loan_status = 'fully paid'
+        loan.loan_status = 'fully_paid'
         loan.payment_timestamp = datetime.now(timezone.utc) + timedelta(hours=3)
         db.session.commit()
         flash('Loan fully paid successfully.', 'success')
@@ -751,7 +762,7 @@ def submit_record():
                     renamed_filename = secure_filename(rename_filename)
                     filepath = os.path.join(routes.config['DOCS_FOLDER'], renamed_filename)
                     file.save(filepath)
-                    new_record.document_path = renamed_filename  # Update the document_path field
+                    new_record.document_path = renamed_filename
                 else:
                     flash('Invalid document format. Allowed formats: PDF, DOCX', 'danger')
                     return redirect(url_for('routes.dashboard'))
@@ -767,7 +778,7 @@ def submit_record():
         }
         flash(category_flash_message.get(new_record.category, 'Record submitted successfully!'), 'success')
 
-        return redirect(url_for('routes.dashboard'))  # Redirect to a suitable route after submission
+        return redirect(url_for('routes.dashboard'))
 
     # Provide more specific error messages
     flash_errors = "\n".join([f"{field.label.text}: {', '.join(errors)}" for field, errors in records_form.errors.items()])

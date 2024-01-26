@@ -1,5 +1,10 @@
 # Loan Management System
 
+<h3 align="center">Loan Management System Screenshots Demo</h3>
+<div align="center">
+    <img src="./app/static/images/dash-image.png" alt="LMS Demo" title="Desktop Demo" width="90%">
+</div>
+
 ## Overview
 
 The Loan Management System is a Flask-based web application meticulously crafted to efficiently handle loans, user accounts, and system settings. Whether born out of the needs of a local group or developed using Python, Bootstrap, JavaScript, CSS, HTML, and Jinja2, this GitHub repository houses an efficient solution designed to streamline the loan management process seamlessly. The system offers a user-friendly interface, making it a valuable tool for effective loan tracking and administration within various contexts.
@@ -81,7 +86,6 @@ To access the admin panel, use the following credentials. You will need to log i
 
 Note: Please ensure the security of these credentials and change the password after the initial login.
 
-
 ## Contributing
 
 We welcome contributions to improve the Loan Management System. If you'd like to contribute, please follow our contribution guidelines outlined below:
@@ -97,7 +101,6 @@ We welcome contributions to improve the Loan Management System. If you'd like to
 1. Submit a pull request to the main repository.
 
 Our maintainers will review your contributions and provide feedback. Thank you for helping enhance the Loan Management System!
-
 
 ## License
 
