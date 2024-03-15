@@ -1,0 +1,698 @@
+<!-- Dashboard Section -->
+<div id="dashboard" class="section active">
+  <div class="container-fluid">
+    <div class="h2 mb-2">Dashboard</div>
+
+    <!-- Dashboard Data Cards -->
+    <div class="row mb-3">
+      <!-- User Information Card -->
+      <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm bg-primary bg-opacity-10 h-100">
+          <div class="card-body">
+            <div class="card-title fw-bold mb-3">
+              <i class="fas fa-users fw-bold me-2"></i> User Information
+            </div>
+
+            {% set top_customer_loan = loans | selectattr('loan_status',
+            'equalto', 'fully_paid') | sort(attribute='principal', reverse=true)
+            | first %}
+
+            <div class="mb-3">
+              <span class="fw-normal">Top Customer:</span>
+              {% if top_customer_loan %}
+              <span class="fw-bold ms-2 badge bg-info rounded-pill"
+                >{{ top_customer_loan.customer_name.title() }}</span
+              >
+              {% else %}
+              <span class="fw-bold ms-2">No Data</span>
+              {% endif %}
+            </div>
+
+            {% set all_users_count = users | selectattr('id', 'ne', 1) | list |
+            length %}
+            <div class="mb-3">
+              <span class="fw-normal">Total Users:</span>
+              <span class="fw-bold ms-2">{{ all_users_count }}</span>
+              <span class="fw-normal ms-2">Users</span>
+            </div>
+
+            {% set all_verified_users_count = users | selectattr('id', 'ne', 1)
+            | selectattr('verification_status', 'equalto', true) | list | length
+            %}
+            <div class="mb-3">
+              <span class="fw-normal">Verified Users:</span>
+              <span class="fw-bold ms-2">{{ all_verified_users_count }}</span>
+              <span class="fw-normal ms-2">Users</span>
+            </div>
+
+            {% set all_customers_count = users | selectattr('membership',
+            'equalto', false) | selectattr('verification_status', 'equalto',
+            true) | list | length %}
+            <div class="mb-3">
+              <span class="fw-normal">All Customers:</span>
+              <span class="fw-bold ms-2">{{ all_customers_count }}</span>
+              <span class="fw-normal ms-2">Users</span>
+            </div>
+
+            {% set top_guarantor_loan = loans | selectattr('loan_status',
+            'equalto', 'fully_paid') | sort(attribute='principal', reverse=true)
+            | first %}
+            <div class="mb-3">
+              <span class="fw-normal">Top Guarantor:</span>
+              {% if top_guarantor_loan %}
+              <span class="fw-bold ms-2 badge bg-info rounded-pill"
+                >{{ top_guarantor_loan.guarantor_name.title() }}</span
+              >
+              {% else %}
+              <span class="fw-bold ms-2">No Data</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loan Information Card -->
+      <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm bg-warning h-100 bg-opacity-10">
+          <!-- Card Body -->
+          <div class="card-body">
+            <div class="card-title fw-bold mb-3">
+              <i class="fas fa-hand-holding-usd fw-bold me-2"></i>Loan
+              Information
+            </div>
+
+            <!-- Loan Portfolio -->
+            {% set fully_paid_loans = loans | selectattr('loan_status',
+            'equalto', 'fully_paid') %} {% set total_amount_fully_paid_loans =
+            fully_paid_loans | map(attribute='principal') | sum %}
+            <!-- Disbursed -->
+            {% set fully_issued_loans = loans | selectattr('loan_status',
+            'equalto', 'fully_issued') %} {% set sum_of_fully_issued_loans =
+            fully_issued_loans | map(attribute='principal') | sum %} {% set
+            partially_issued_loans = loans | selectattr('loan_status',
+            'equalto', 'partially_issued') %} {% set
+            sum_of_partially_issued_loans = partially_issued_loans |
+            map(attribute='partial_issuance') | sum %} {% set
+            partially_paid_loans = loans | selectattr('loan_status', 'equalto',
+            'partially_paid') %} {% set sum_of_partially_paid_loans =
+            partially_paid_loans | map(attribute='partial_payment') | sum %}
+            <!-- All Due Loans -->
+            {% set customers_with_due_loans = loans |
+            selectattr('payment_timestamp', 'defined') |
+            selectattr('loan_status', 'equalto', 'fully_issued') |
+            selectattr('payment_timestamp', 'lt', now) %}
+            <!-- Total Fine Amount -->
+            {% set customers_with_fines = loans | selectattr('loan_status',
+            'equalto', 'fully_paid') | selectattr('fines', 'ne', '0') %} {% set
+            total_amount_fines = customers_with_fines | map(attribute='fines') |
+            sum %}
+
+            <!-- Loan Portfolio -->
+            <div class="mb-3">
+              <span class="fw-normal">Loan Portfolio:</span>
+              <span class="fw-bold ms-2">
+                KES {{ "%0.0f"|format(total_amount_fully_paid_loans) |
+                default('none') }}
+              </span>
+            </div>
+
+            <!-- Total Loans -->
+            <div class="mb-3">
+              <span class="fw-normal" title="Total Loans">Total Loans:</span>
+              <span class="fw-bold ms-2">
+                <span class="text-dark" title="All Loans"
+                  >{{ loans | length }},</span
+                >
+                <span
+                  class="text-secondary"
+                  title="{{ loans | selectattr('loan_status', 'equalto', '**partially_issued**') | list | length }} Partially Issued Loans and {{ loans | selectattr('loan_status', 'equalto', '**partially_paid**') | list | length }} Partially Paid Loans"
+                  >{{ (loans | selectattr('loan_status', 'equalto', '**partially
+                  issued**') | list | length) + (loans |
+                  selectattr('loan_status', 'equalto', '**partially_paid**') |
+                  list | length) }},</span
+                >
+                <span class="text-danger" title="fully_issued Loans"
+                  >{{ loans | selectattr('loan_status', 'equalto',
+                  'fully_issued') | list | length }},</span
+                >
+                <span class="text-success" title="Fully Paid Loans"
+                  >{{ loans | selectattr('loan_status', 'equalto', 'fully_paid')
+                  | list | length }}</span
+                >
+              </span>
+            </div>
+
+            <!-- Disbursed -->
+            <div class="mb-3">
+              <span class="fw-normal">Disbursed:</span>
+              <span class="fw-bold ms-2"
+                >KES {{ "%0.0f"|format(sum_of_fully_issued_loans +
+                sum_of_partially_issued_loans) }}
+              </span>
+            </div>
+
+            <!-- All Due Loans -->
+            <div class="mb-3">
+              <span class="fw-normal">All Due Loans:</span>
+              {% if customers_with_due_loans %} {% set sum_of_all_due_loans =
+              customers_with_due_loans | map(attribute='principal') | sum %}
+              <span class="fw-bold text-danger ms-2"
+                >KES {{ "%0.0f"|format(sum_of_all_due_loans) }}</span
+              >
+              {% else %}
+              <span class="fw-bold ms-2">No Data</span>
+              {% endif %}
+            </div>
+
+            <!-- Total Fine Amount -->
+            <div class="mb-3">
+              <span class="fw-normal">Total Fine Amount:</span>
+              <span class="fw-bold ms-2">
+                KES {{ "%0.0f"|format(total_amount_fines) | default('none') }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contributions Information Card -->
+      <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm bg-success h-100 bg-opacity-10">
+          <div class="card-body">
+            <div class="card-title fw-bold mb-3">
+              <i class="fas fa-calendar-alt fw-bold me-2"></i> Contributions
+              Information
+            </div>
+
+            {% set all_contributors =
+            user.query.filter_by(membership=True).count() %} {% set
+            members_contribution = contributions |
+            selectattr('transaction_type', 'equalto', True) %} {% set
+            sum_of_members_contribution = members_contribution |
+            map(attribute='amount') | map('float') | sum %} {% set
+            complete_fined_contributions = contributions |
+            selectattr('transaction_type', 'equalto', true) %} {% set
+            sum_of_complete_fined_contributions = complete_fined_contributions |
+            map(attribute='fine_amount') | map('float') | sum %} {% set
+            welfare_given = contributions | selectattr('transaction_type',
+            'equalto', False) %} {% set sum_of_welfare_given = welfare_given |
+            map(attribute='amount') | map('float') | sum %} {% set
+            complete_welfare_charges = contributions |
+            selectattr('transaction_type', 'equalto', False) %} {% set
+            sum_of_complete_welfare_charges = complete_welfare_charges |
+            map(attribute='fine_amount') | map('float') | sum %}
+
+            <div class="mb-3">
+              {% if members_contribution %}
+              <span class="fw-normal">All Contributors:</span>
+              <span class="fw-bold ms-2">{{ all_contributors - 1 }}</span>
+              <span class="fw-normal ms-2">Users</span>
+              {% else %}
+              <span class="fw-normal">No Data</span>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {% if members_contribution %}
+              <span class="fw-normal">Total Amount:</span>
+              <span class="fw-bold ms-2">
+                KES {{ "%0.0f"|format(sum_of_members_contribution +
+                sum_of_complete_fined_contributions) }}
+              </span>
+              {% else %}
+              <span class="fw-normal">No Data</span>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {% if members_contribution and sum_of_members_contribution > 1 %}
+              <span class="fw-normal">Avg per User:</span>
+              <span class="fw-bold ms-2"
+                >KES {{ "%0.0f"|format((sum_of_members_contribution +
+                sum_of_complete_fined_contributions) / (all_contributors - 1))
+                }}</span
+              >
+              {% else %}
+              <span class="fw-normal">No Data</span>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {% if members_contribution %}
+              <span class="fw-normal">Total Fine Amount:</span>
+              <span class="fw-bold ms-2"
+                >KES {{ "%0.0f"|format(sum_of_complete_fined_contributions)
+                }}</span
+              >
+              {% else %}
+              <span class="fw-normal">No Data</span>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {% if welfare_given %}
+              <span class="fw-normal">Total Assistance:</span>
+              <span class="fw-bold ms-2"
+                >KES {{ "%0.0f"|format(sum_of_welfare_given) }}</span
+              >
+              {% else %}
+              <span class="fw-normal">No Data</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Company Status Card -->
+      <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm bg-danger h-100 bg-opacity-10">
+          <div class="card-body">
+            <div class="card-title fw-bold mb-3">
+              <i class="fas fa-business-time fw-bold me-2"></i> Company Status
+            </div>
+
+            <!-- Loan Portfolio -->
+            {% set fully_paid_loans = loans | selectattr('loan_status',
+            'equalto', 'fully_paid') %} {% set
+            total_amount_fully_paid_loans_profit = fully_paid_loans |
+            map(attribute='profit') | sum %} {% set all_contributions_count =
+            contributions | selectattr('transaction_type', 'equalto', True) |
+            list | length %}
+            <!-- Disbursed -->
+
+            <div class="mb-3">
+              <span class="fw-normal">Net-worth:</span>
+              <span class="fw-bold ms-2"
+                >KES {{ "%0.0f"|format(sum_of_members_contribution +
+                sum_of_complete_fined_contributions + total_amount_fines +
+                total_amount_fully_paid_loans_profit - sum_of_welfare_given -
+                sum_of_complete_welfare_charges) }}</span
+              >
+            </div>
+
+            <div class="mb-3">
+              <span class="fw-normal">Savings Acc.:</span>
+              <span class="fw-bold ms-2"
+                >KES {{ "%0.0f"|format(sum_of_members_contribution +
+                sum_of_complete_fined_contributions - sum_of_welfare_given -
+                sum_of_complete_welfare_charges) }}</span
+              >
+            </div>
+
+            <div class="mb-3">
+              <span class="fw-normal">Loan Profits:</span>
+              <span class="fw-bold ms-2"
+                >KES {{ "%0.0f"|format(total_amount_fully_paid_loans_profit +
+                total_amount_fines) }}</span
+              >
+            </div>
+
+            <div class="mb-3">
+              <span class="fw-normal">Welfare Balance:</span>
+              <span class="fw-bold ms-2"
+                >KES {{ "%0.0f"|format((all_contributions_count * 200) -
+                sum_of_welfare_given) }}</span
+              >
+            </div>
+
+            <div class="mb-3">
+              <span class="fw-normal">Cash Flow:</span>
+              <span class="fw-bold ms-2"
+                >KES {{ "%0.0f"|format(sum_of_members_contribution +
+                sum_of_complete_fined_contributions + total_amount_fines +
+                total_amount_fully_paid_loans_profit - sum_of_welfare_given -
+                sum_of_complete_welfare_charges - sum_of_fully_issued_loans -
+                sum_of_partially_issued_loans + sum_of_partially_paid_loans)
+                }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Due Loans In Swiper Slide -->
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="card border-0 shadow-sm mb-3">
+          <!-- Card Body -->
+          <div class="card-body border-0 text-center">
+            <!-- All Over Due Loans in a Swiper Slider -->
+            <div class="swiper-container">
+              <div class="swiper-wrapper">
+                {% set customers_with_due_loans = loans |
+                selectattr('payment_timestamp', 'defined') |
+                selectattr('loan_status', 'equalto', 'fully_issued') |
+                selectattr('payment_timestamp', 'lt', now) |
+                sort(attribute='principal', reverse=true) %} {% if
+                customers_with_due_loans %} {% for customer in
+                customers_with_due_loans %} {% set sum_of_principal_for_customer
+                = loans | selectattr('customer_name', 'equalto',
+                customer.customer_name) | selectattr('loan_status', 'equalto',
+                'fully_issued') | map(attribute='principal') | sum %}
+                <div class="swiper-slide">
+                  <span>
+                    {{ customer.customer_name.title() if customer.customer_name
+                    else 'No Data' }},
+                    <b class="text-danger"
+                      >KES {{ "%0.0f"|format(sum_of_principal_for_customer) if
+                      sum_of_principal_for_customer else 'No Data' }}</b
+                    >
+                  </span>
+                </div>
+                {% endfor %} {% else %}
+                <div class="swiper-slide">
+                  <span class="fw-bold ms-2">No Due Loans Data</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Visualization Graphs -->
+    <div class="row mb-3">
+      <!-- New line chart for Customer Acquisition -->
+      <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="card-title">Customer Acquisition Chart</div>
+            <canvas
+              id="customerAcquisitionChart"
+              width="400"
+              height="200"
+            ></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- New bar chart for Loans Processed per Month -->
+      <div class="col-md-6 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="card-title">Loans Processed per Month Chart</div>
+            <canvas id="loansProcessedChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Existing doughnut chart -->
+      <div class="col-md-4 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="card-title">Loan Totals by Status</div>
+            <canvas id="loanAmountsByStatus" width="1600" height="400"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Existing doughnut chart -->
+      <!--
+      {% if contributions_per_user_data.labels %}
+      <div class="col-md-4 mb-3">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-header fw-bold border-0">Contributions per User</div>
+          <div class="card-body">
+            <canvas
+              id="contributionsPerUserData"
+              width="400"
+              height="200"
+            ></canvas>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      -->
+    </div>
+
+    <!-- Dashboard Data Tables -->
+    <div class="row">
+      {% if user.membership %}
+      <div class="col-md-12">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-header fw-bold border-0">
+            Contributions Data tables
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table
+                id="example"
+                class="table table-borderless table-hover data-table text-center"
+                style="width: 100%"
+              >
+                <thead class="table-primary">
+                  <tr>
+                    <th>Full Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Amount</th>
+                    <th>Fine/Cost</th>
+                    <th>Transaction</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for contribution in contributions | reverse %}
+                  <tr>
+                    <td>{{ contribution.contributor.title() }}</td>
+                    <td>{{ contribution.timestamp.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ contribution.timestamp.strftime('%H:%M:%S') }}</td>
+                    <td>KES {{ "%0.2f"|format(contribution.amount) }}</td>
+                    <td>KES {{ "%0.2f"|format(contribution.fine_amount) }}</td>
+                    <td>
+                      {% if contribution.transaction_type %}
+                      <span class="text-success">Contribution</span>
+                      {% else %}
+                      <span class="text-danger">Welfare</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <a href="/edit_contribution/{{ contribution.id }}">
+                        <ion-icon name="eye-outline"></ion-icon>
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% block script %}
+  <!-- Fetch data for the charts from the server -->
+  <script>
+    // Fetch data for the charts from the server
+    fetch("/dashboard", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // New bar chart for Customer Acquisition
+        var ctx2 = document
+          .getElementById("customerAcquisitionChart")
+          .getContext("2d");
+        new Chart(ctx2, {
+          type: "line",
+          data: {
+            labels: data.customer_acquisition_data.labels,
+            datasets: [
+              {
+                label: "Customer Acquisition",
+                data: data.customer_acquisition_data.data,
+                backgroundColor: "rgba(75, 192, 192, 0.6)",
+                borderColor: "rgba(75, 192, 192, 0.1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  display: false,
+                },
+              },
+              x: {
+                grid: {
+                  display: false,
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                display: true,
+                position: "top",
+              },
+              tooltip: {
+                mode: "nearest",
+                intersect: false,
+              },
+            },
+          },
+        });
+
+        // New bar chart for Loans Processed per Month
+        var ctx3 = document
+          .getElementById("loansProcessedChart")
+          .getContext("2d");
+        new Chart(ctx3, {
+          type: "bar",
+          data: {
+            labels: data.loans_processed_data.labels,
+            datasets: [
+              {
+                label: "Loans Processed per Month",
+                data: data.loans_processed_data.data,
+                backgroundColor: "rgba(255, 99, 132, 0.6)",
+                borderColor: "rgba(255, 99, 132, 0.1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  display: false,
+                },
+              },
+              x: {
+                grid: {
+                  display: false,
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                display: true,
+                position: "top",
+              },
+              tooltip: {
+                mode: "nearest",
+                intersect: false,
+              },
+            },
+          },
+        });
+
+        // Loan Totals by Status doughnut chart
+        var ctx1 = document
+          .getElementById("loanAmountsByStatus")
+          .getContext("2d");
+        new Chart(ctx1, {
+          type: "doughnut",
+          data: {
+            labels: data.loan_status_data.labels.map((label) =>
+              label.substring(0, 3)
+            ),
+            datasets: [
+              {
+                data: data.loan_status_data.data,
+                backgroundColor: data.loan_status_data.backgroundColor,
+                opacity: 0.5,
+              },
+            ],
+          },
+          options: {
+            layout: {
+              padding: {
+                top: 20,
+              },
+            },
+            plugins: {
+              legend: {
+                display: true,
+                position: "top",
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: "circle",
+                },
+              },
+            },
+            scales: {
+              grid: {
+                display: false,
+              },
+            },
+          },
+        });
+
+        // Create a sequence of alternating colors
+        var colorSequence = createColorSequence(
+          data.contributions_per_user_data.labels.length
+        );
+
+        // Doughnut chart for Contributions per User
+        var ctx1 = document
+          .getElementById("contributionsPerUserData")
+          .getContext("2d");
+        new Chart(ctx1, {
+          type: "doughnut",
+          data: {
+            labels: data.contributions_per_user_data.labels,
+            datasets: [
+              {
+                data: data.contributions_per_user_data.data,
+                backgroundColor: colorSequence,
+                borderColor: colorSequence.map((color) =>
+                  color.replace("0.2", "1")
+                ), // Adjust the border color if needed
+                borderWidth: 1,
+              },
+            ],
+          },
+        });
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+
+    // Function to create a sequence of alternating colors
+    function createColorSequence(length) {
+      var colors = [];
+      for (var i = 0; i < length; i++) {
+        // Use different color patterns based on the index
+        var color =
+          i % 2 === 0 ? "rgba(255, 99, 132, 0.2)" : "rgba(75, 192, 192, 0.2)";
+        colors.push(color);
+      }
+      return colors;
+    }
+  </script>
+
+  <!-- Initialize Swiper -->
+  <script>
+    var swiper = new Swiper(".swiper-container", {
+      slidesPerView: 3,
+      spaceBetween: 10,
+      pagination: {
+        clickable: true,
+      },
+      autoplay: {
+        delay: 3000, // 3 seconds
+      },
+      loop: true,
+    });
+  </script>
+
+  <!-- Initialize Data Tables -->
+  <script>
+    $(document).ready(function () {
+      $(".data-table").each(function (_, table) {
+        $(table).DataTable();
+      });
+    });
+  </script>
+  {% endblock %}
+</div>

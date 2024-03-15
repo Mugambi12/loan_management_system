@@ -1,9 +1,12 @@
 # Loan Management System
 
-<h3 align="center">Loan Management System Screenshots Demo</h3>
-<div align="center">
-    <img src="./app/static/images/dash-image.png" alt="LMS Demo" title="Desktop Demo" width="90%">
-</div>
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/mugambi12/loan_management_system?color=blueviolet)
+![Number of lines of code](https://img.shields.io/tokei/lines/github/mugambi12/loan_management_system?color=blueviolet)
+![Code language count](https://img.shields.io/github/languages/count/mugambi12/loan_management_system?color=blue)
+![GitHub top language](https://img.shields.io/github/languages/top/mugambi12/loan_management_system?color=blue)
+![GitHub last commit](https://img.shields.io/github/last-commit/mugambi12/loan_management_system?color=brightgreen)
+
+![Water Management System Demo](./app/client//static/images/dashboard_demo.png)
 
 ## Overview
 
@@ -69,7 +72,7 @@ Ensure you have the following installed:
    python run.py
    ```
 
-3. Open your web browser and go to [http://localhost:5000](http://localhost:5000).
+3. Open your web browser and go to [http://localhost:7070](http://localhost:7070).
 
 ## Usage
 

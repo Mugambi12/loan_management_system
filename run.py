@@ -3,8 +3,8 @@
 # Run.py
 from datetime import datetime, timezone
 from flask_apscheduler import APScheduler
-from app import db, create_app
-from app.models import Loan
+from app.server import db, create_app
+from app.server.database.models import Loan
 
 
 app = create_app()
@@ -51,4 +51,4 @@ schedule.add_job(id='process_fines', func=process_fines, trigger='interval', hou
 
 if __name__ == '__main__':
     schedule.start()
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=app.config['DEBUG'], host=app.config['HOST'], port=app.config['PORT'])
